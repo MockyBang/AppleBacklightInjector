@@ -4,7 +4,14 @@
 
 uid=10
 
-ioreg -n AppleDisplay -arxw0>/tmp/org.rehabman.display.plist
+content=$(ioreg -n AppleBacklightDisplay -arxw0)
+if [[ -z $content ]];
+then display_type=AppleDisplay;
+else display_type=AppleBacklightDisplay;
+fi
+echo $display_type
+
+ioreg -n $display_type -arxw0>/tmp/org.rehabman.display.plist
 id=`/usr/libexec/PlistBuddy -c "Print :0:DisplayProductID" /tmp/org.rehabman.display.plist`
 id=`printf "F%02dT%04x" $uid $id`
 sed "s/F99T1234/$id/g" 4x40s_Backlight.plist >/tmp/org.rehabman.merge.plist
